@@ -1,0 +1,85 @@
+<script>
+$(document).ready(function() {
+    $("#bookCreationForm").validate({
+        rules: {
+	    	title: "required",
+	    	author: "required",
+	    },
+	    messages: {
+	    	title:"Tiêu đề không được trống",
+	    	author: " Tác giả không được trống"
+	    }
+    }); $('#bookCreationDiv').modal('show');
+});
+
+$("#bookCreationForm").submit(function(event) {
+    event.preventDefault();
+    if($("#bookCreationForm").valid() ) {
+        addBook();
+    }
+})
+
+function addBook(){
+	 var newBook = {}
+	 newBook["title"] = $('#bookCreationForm').find('#title').val();
+	 newBook["author"]= $('#bookCreationForm').find('#author').val();	
+	 newBook["description"]= $('#bookCreationForm').find('#description').val();
+	 $.ajax({
+		type : "POST",
+		contentType : "application/json",
+		url : window.location.origin+"/api/book/add",
+		data : JSON.stringify(newBook),
+		dataType : 'json',
+		success: function(result){
+			 $('#bookCreationDiv').modal('hide');
+			 $('#successMsg').html(result.status);
+			 setTimeout(function(){ $('#successMsg').html("")}, 5000);
+			 displayBooks();
+			 
+			
+		 },
+	  error: function(e){      
+	   alert('Error while request..'+e);
+	  }
+	 }); 
+}
+</script>
+
+<div id="bookCreationDiv" class="modal fade" role="dialog" >
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" style="padding:20px 40px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Thêm sách mới</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+	          <form role="form" name="bookCreationForm" id="bookCreationForm"> 
+			  <table style=" width:100%"  class="bookForm">
+			   <tr>
+			    <td><label ><b>Tiêu đề</b></label></td>
+			    <td><input type="text" name="title" id="title" class="form-control" ></td>
+			   </tr>
+			   <tr>
+			    <td><label ><b>Tác giả</b></label></td>
+			    <td> <input type="text" name="author" id="author" class="form-control"></td>
+			   </tr>
+			   <tr>
+			    <td><label ><b>Mô tả</b></label></td>
+			    <td> <textarea name="description" id="description" class="form-control"></textarea>
+			   </tr>
+			   <tr>
+			    <td></td>
+			    <td>
+			    	<button type="submit" class="btn btn-primary" id="bookFormBtn">Cập nhật</button>
+	              	<button type="submit" class="btn btn-danger btn-default" data-dismiss="modal">
+	              		Hủy</button>
+			    </td>
+			   </tr>
+			  </table>
+			 </form>
+	        </div>
+		</div>
+	</div>
+         	 
+			 
+		</div>	

@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+/* ------------------- */
+.modal-header, h4, .close {
+      background-color: #4266ce;
+      color:white !important;
+      text-align: center;
+      font-size: 30px;
+  }
+.modal-footer {
+      background-color: #f9f9f9;
+}

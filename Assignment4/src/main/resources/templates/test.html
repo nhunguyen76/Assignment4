@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+	<meta charset="utf-8" />
+	<title>Trang chủ</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="/js/myJavascript.js"></script> 
+	<link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/formStyle.css"/>
+    <link rel="stylesheet" href="/css/myStyle.css"/>
+</head>
+<script>
+
+$(document).ready( function () {
+	 $("#tableList tbody").on("click",".testbtn",function(){
+		    //$(this).closest('td').html(1);
+		    var cells = $(this).closest('tr').children('td');
+		    alert(cells);
+		  }); 
+	 $.ajax({
+		type : "GET",
+		url : window.location.origin+"/api/book/all?page=0&size=5",
+		success: function(result){
+				$.each(result.data.content, function(i, book){
+					var bookRow='';
+					if(book.enabled == 1){
+						bookRow += '<tr><td>'+book.id+'</td>' +	'<td >'+ 
+						'<button class="changeEnabledBtn btn btn-success"> Hiện </button>' +'</td>' + 
+						'</tr>';
+					}else{
+						bookRow += '<tr><td>'+book.id+'</td>' +'<td >'+ 
+						'<button class="changeEnabledBtn btn btn-danger"> Ẩn </button>' +'</td>' + 
+						'</tr>';
+					}
+					$('#tableList tbody').append(bookRow);
+					
+		        });
+				$("#btntest").click(function(){
+				    alert("The paragraph was clicked.");
+				}); 
+		},
+		error : function(e) {
+			alert("ERROR: ", e);
+			console.log("ERROR: ", e);
+		}
+	}); 
+	
+	 
+});
+
+function doCheck(status){
+	var div = '';
+    if(status){
+    	div += '<button class="btn1">A</button>';
+    }else{
+    	div += '<button class="btn1">A</button>';
+
+    }
+    return div;
+}
+function changeStatusBook(st, id){
+	$.ajax({
+	  url: window.location.origin+"/api/book/enabled/"+id,
+      type: 'POST',
+      cache: false,
+      data: {
+        status : st
+      },
+      success: function(result){
+      	$('.notiMsg').html(result.status);
+  		setTimeout(function(){ $('.notiMsg').html("")}, 5000);
+  	  }
+	});	
+	
+}
+</script>
+<body>
+	<table id="tableList" class="display">
+       <thead>
+            <tr>
+            	<th>ID</th>
+                <th>Tình trạng</th>
+            </tr>
+        </thead>
+        <tbody>
+         <tr>
+         	<td>id</td>
+            <td ><button class="testbtn" >A</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<script>
+var bookDetailUrl = window.location.href;
+var bookId = bookDetailUrl.substring(bookDetailUrl.lastIndexOf('/') + 1);
+getBookDetail(bookId);
+getAllComment(bookId);
+$('#bookDetailDiv').modal('show');
+
+function getBookDetail(bookId){
+	$.ajax({
+		type : "GET",
+		url : window.location.origin+"/api/book/"+bookId,
+		success: function(result){				
+				$('#bookDetailDiv').find('h4#title').html(result.title);
+				$('.tableDetailBook').find('td#author').html(result.author);
+				$('.tableDetailBook').find('td#createdAt').html(result.createdAt);
+				$('.tableDetailBook').find('td#updatedAt').html(result.updatedAt);
+				$('.tableDetailBook').find('td#description').html(result.description);
+				document.getElementById("bookImage").setAttribute("src", "/images/"+result.image);
+				
+		},
+		error : function(ex) {
+			alert("ERROR: ", ex);
+			console.log("ERROR: ", ex);
+		}
+	});
+}
+
+function getAllComment(bookId){
+	 $.ajax({
+		type : "GET",
+		contentType : "application/json",
+		url : window.location.origin+"/api/comment/all/"+bookId,
+		success: function(result){
+			$.each(result, function(i, comment){
+					var commentDiv = '<div class="panel panel-info">' + 
+					'<div class="panel-heading" style="margin: 3px 3px 3px"><b>' + getEmailUserById(comment.userId) + 
+					'</b><i style="padding-left: 10px;font-size: small;">' + comment.createdAt + '</i></div>' +
+					'<div class="panel-body">'+comment.message + '</div>' +
+					
+					'</div>';
+				$('#commentDiv').append(commentDiv);
+	        });
+		 },
+	  error: function(e){      
+	   alert('Lỗi!Không cập nhật được'+e);
+	  }
+	 }); 
+}
+</script>
+
+<div id="bookDetailDiv" class="modal fade" role="dialog" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header" style="padding:20px 40px;">
+          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+          		<h4 id="title"></h4>
+       		</div>
+        	<div class="modal-body" style="padding:40px 50px; max-height:auto"> 
+				  <table style=" width:100%"  class="tableDetailBook">
+					   <tr>
+						    <td style="width: 20%"><label><b>Tác giả</b></label></td>
+						    <td style="width: 50%"id="author"></td>
+						    <td style="width: 30%" rowspan="3" >
+						    	<img id="bookImage" width=150px >
+						    </td>
+					   </tr>
+				   	<tr>
+				    	<td style="width: 20%"><label ><b>Ngày tạo</b></label></td>
+				    	<td style="width: 50%"id="createdAt"></td>
+				   	</tr>
+				   	<tr>
+				    	<td style="width: 20%"><label ><b>Ngày cập nhật</b></label></td>
+				    	<td style="width: 50%"id="updatedAt"></td>
+				   	</tr>
+				   	<tr>
+				    	<td style="width: 20%"><label ><b>Mô tả</b></label></td>
+				    	<td style="width: 80%" id="description" colspan="2"></td>
+				   	</tr>
+				   	
+				 </table>
+				<div class="col-md-12 form-group" id="" sec:authorize="hasAnyRole('USER','ADMIN','SUPER_ADMIN')">
+					<form role="form" name="commentForm" id="commentForm">
+						<div class="form-group">
+							<label> Bình luận </label>
+				       		<textarea name="comment" id="comment" class="form-control"></textarea> 
+						</div>	 
+						<button type="submit" class="btn btn-primary ">Đăng</button>
+					</form>
+				</div>	
+				<div class="col-md-10" id="commentDiv" style="margin-top:20px"></div>	
+				
+				 <div class="modal-footer">
+		        	<button type="submit" class="btn btn-danger btn-default" 
+				            data-dismiss="modal">Đóng</button>
+		      	</div>				 
+			</div>
+		</div>
+	</div>
+</div>	
